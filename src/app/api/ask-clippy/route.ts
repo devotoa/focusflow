@@ -1,36 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1467992560097034252/Y4Ee_Y5HHld0tG-jDd8Y5mOcHVmTGQp_fJji7JtUD6MMmXvA2Bj_uetRiwBov_HUqEbH';
-
 export async function POST(request: NextRequest) {
   try {
-    const { task, message } = await request.json();
+    const body = await request.json();
+    const { task, message } = body;
 
-    // Enviar mensaje a Discord
-    const response = await fetch(DISCORD_WEBHOOK_URL, {
+    console.log('Recibido:', { task, message });
+
+    const webhookUrl = 'https://discord.com/api/webhooks/1467992560097034252/Y4Ee_Y5HHld0tG-jDd8Y5mOcHVmTGQp_fJji7JtUD6MMmXvA2Bj_uetRiwBov_HUqEbH';
+
+    const response = await fetch(webhookUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        content: message,
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: message }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Error enviando a Discord:', errorText);
+      console.error('Discord error:', response.status, errorText);
       return NextResponse.json(
-        { error: 'Error enviando mensaje a Discord', details: errorText },
+        { error: 'Discord error', status: response.status, details: errorText },
         { status: 500 }
       );
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error en ask-clippy:', error);
+  } catch (error: any) {
+    console.error('Exception:', error);
     return NextResponse.json(
-      { error: 'Error interno', details: String(error) },
+      { error: 'Exception', message: error.message },
       { status: 500 }
     );
   }
