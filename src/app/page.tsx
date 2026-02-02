@@ -99,19 +99,21 @@ export default function Home() {
   const handleAskClippy = async (task: Task) => {
     const message = `🤖 **Nueva tarea para Clippy**\n\n**Título:** ${task.title}\n**Categoría:** ${task.category}\n**Prioridad:** ${task.priority}\n**Estado:** ${task.status}\n${task.description ? `**Descripción:** ${task.description}` : ''}\n\n<@1467274104791896187> por favor, ¿podés hacer esta tarea?`;
     
-    // Copiar al portapapeles
     try {
-      await navigator.clipboard.writeText(message);
-      alert('✅ Mensaje copiado al portapapeles. Pegalo en Discord con Ctrl+V.');
-    } catch (err) {
-      // Fallback: mostrar el mensaje para copiar manualmente
-      const textarea = document.createElement('textarea');
-      textarea.value = message;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-      alert('✅ Mensaje copiado. Pegalo en Discord con Ctrl+V.');
+      const response = await fetch('/api/ask-clippy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task, message }),
+      });
+      
+      if (response.ok) {
+        alert('✅ Le pediste a Clippy que haga esta tarea. Te va a responder por Discord.');
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }));
+        alert('❌ Error: ' + (errorData.error || 'Error desconocido'));
+      }
+    } catch (error: any) {
+      alert('❌ Error de conexión: ' + error.message);
     }
   };
 
