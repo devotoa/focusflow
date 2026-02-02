@@ -97,31 +97,21 @@ export default function Home() {
   };
 
   const handleAskClippy = async (task: Task) => {
-    const message = `🤖 **Nueva tarea para Clippy**\n\n**Título:** ${task.title}\n**Categoría:** ${task.category}\n**Prioridad:** ${task.priority}\n**Estado:** ${task.status}\n${task.description ? `**Descripción:** ${task.description}` : ''}\n\n@clippy por favor, ¿podés hacer esta tarea?`;
+    const message = `🤖 **Nueva tarea para Clippy**\n\n**Título:** ${task.title}\n**Categoría:** ${task.category}\n**Prioridad:** ${task.priority}\n**Estado:** ${task.status}\n${task.description ? `**Descripción:** ${task.description}` : ''}\n\n<@1467274104791896187> por favor, ¿podés hacer esta tarea?`;
     
-    // Webhook de Discord directo
-    const webhookUrl = 'https://discord.com/api/webhooks/1467992560097034252/Y4Ee_Y5HHld0tG-jDd8Y5mOcHVmTGQp_fJji7JtUD6MMmXvA2Bj_uetRiwBov_HUqEbH';
-    
+    // Copiar al portapapeles
     try {
-      console.log('Enviando a Discord:', webhookUrl);
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: message }),
-      });
-      
-      console.log('Response status:', response.status);
-      
-      if (response.ok) {
-        alert('✅ Le pediste a Clippy que haga esta tarea. Te va a responder por Discord.');
-      } else {
-        const errorText = await response.text();
-        console.error('Discord error:', response.status, errorText);
-        alert('❌ Error ' + response.status + ': ' + errorText.substring(0, 200));
-      }
-    } catch (error: any) {
-      console.error('Error asking Clippy:', error);
-      alert('❌ Error: ' + (error.message || String(error)));
+      await navigator.clipboard.writeText(message);
+      alert('✅ Mensaje copiado al portapapeles. Pegalo en Discord con Ctrl+V.');
+    } catch (err) {
+      // Fallback: mostrar el mensaje para copiar manualmente
+      const textarea = document.createElement('textarea');
+      textarea.value = message;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      alert('✅ Mensaje copiado. Pegalo en Discord con Ctrl+V.');
     }
   };
 
