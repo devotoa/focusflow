@@ -51,15 +51,16 @@ export async function moveTask(id: string, newStatus: TaskStatus): Promise<Task>
   return updateTask(id, updates);
 }
 
-export function subscribeToTasks(callback: (tasks: Task[]) => void) {
+export function subscribeToTasks(callback: () => void) {
   const subscription = supabase
     .channel('tasks-channel')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, async () => {
-      const tasks = await getTasks();
-      callback(tasks);
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => {
+      callback();
     })
     .subscribe();
-  return subscription;
+  return () => {
+    subscription.unsubscribe();
+  };
 }
 
 export async function getTaskStats(): Promise<{ completedToday: number; completedThisWeek: number; total: number; pending: number }> {
