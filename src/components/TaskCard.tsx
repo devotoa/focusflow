@@ -76,7 +76,7 @@ export function TaskCard({ task, onComplete, onEdit, onDelete }: TaskCardProps) 
 
         {/* Action Buttons */}
         <div className={`flex items-center gap-1 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-          {task.status !== 'done' && (
+          {task.status !== 'completed' && (
             <button
               onClick={() => onComplete(task.id)}
               className="p-1.5 rounded-lg bg-accent-success/20 text-accent-success hover:bg-accent-success/30 transition-colors"
