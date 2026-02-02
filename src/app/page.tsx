@@ -99,22 +99,26 @@ export default function Home() {
   const handleAskClippy = async (task: Task) => {
     const message = `🤖 **Nueva tarea para Clippy**\n\n**Título:** ${task.title}\n**Categoría:** ${task.category}\n**Prioridad:** ${task.priority}\n**Estado:** ${task.status}\n${task.description ? `**Descripción:** ${task.description}` : ''}\n\n@clippy por favor, ¿podés hacer esta tarea?`;
     
+    // Webhook de Discord directo
+    const webhookUrl = 'https://discord.com/api/webhooks/1467992560097034252/Y4Ee_Y5HHld0tG-jDd8Y5mOcHVmTGQp_fJji7JtUD6MMmXvA2Bj_uetRiwBov_HUqEbH';
+    
     try {
-      // Enviar a Discord webhook (necesitás configurar DISCORD_WEBHOOK_URL en Vercel)
-      const response = await fetch('/api/ask-clippy', {
+      const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ task, message }),
+        body: JSON.stringify({ content: message }),
       });
       
       if (response.ok) {
         alert('✅ Le pediste a Clippy que haga esta tarea. Te va a responder por Discord.');
       } else {
-        alert('❌ Error al enviar la solicitud. Intentá de nuevo.');
+        const errorText = await response.text();
+        console.error('Discord error:', response.status, errorText);
+        alert('❌ Error al enviar la solicitud: ' + response.status);
       }
     } catch (error) {
       console.error('Error asking Clippy:', error);
-      alert('❌ Error al enviar la solicitud.');
+      alert('❌ Error al enviar la solicitud: ' + String(error));
     }
   };
 
