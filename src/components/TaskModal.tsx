@@ -12,9 +12,9 @@ interface TaskModalProps {
   task?: Task | null;
 }
 
-const CATEGORIES: TaskCategory[] = ['meta_ads', 'content_ig', 'scripts', 'strategy', 'accounting', 'research'];
+const CATEGORIES: TaskCategory[] = ['Meta Ads', 'Contenido IG', 'Scripts/Código', 'Estrategia', 'Contabilidad', 'Investigación'];
 const PRIORITIES: TaskPriority[] = ['high', 'medium', 'low'];
-const STATUSES: TaskStatus[] = ['todo', 'in_progress', 'review', 'done'];
+const STATUSES: TaskStatus[] = ['todo', 'in-progress', 'blocked', 'completed'];
 
 export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
   const [title, setTitle] = useState('');

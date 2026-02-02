@@ -61,3 +61,24 @@ export function subscribeToTasks(callback: (tasks: Task[]) => void) {
     .subscribe();
   return subscription;
 }
+
+export async function getTaskStats(): Promise<{ completedToday: number; completedThisWeek: number; total: number; pending: number }> {
+  const { data, error } = await supabase.from('tasks').select('*');
+  if (error) throw error;
+  
+  const tasks = data || [];
+  const today = new Date().toDateString();
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  
+  const completed = tasks.filter(t => t.status === 'completed');
+  const completedToday = completed.filter(t => t.completed_at && new Date(t.completed_at).toDateString() === today).length;
+  const completedThisWeek = completed.filter(t => t.completed_at && new Date(t.completed_at) >= weekAgo).length;
+  const pending = tasks.filter(t => t.status !== 'completed').length;
+  
+  return {
+    completedToday,
+    completedThisWeek,
+    total: completed.length,
+    pending,
+  };
+}

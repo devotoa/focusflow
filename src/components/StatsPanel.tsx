@@ -2,101 +2,60 @@
 
 import { useEffect, useState } from 'react';
 import { CheckCircle2, Calendar, ListTodo, Clock } from 'lucide-react';
-import { getTaskStats } from '@/lib/supabase';
+import { Task } from '@/types/task';
 
-interface StatsData {
-  completedToday: number;
-  completedThisWeek: number;
-  total: number;
-  pending: number;
+interface StatsPanelProps {
+  tasks: Task[];
 }
 
-export function StatsPanel() {
-  const [stats, setStats] = useState<StatsData>({
+export function StatsPanel({ tasks }: StatsPanelProps) {
+  const [stats, setStats] = useState({
     completedToday: 0,
     completedThisWeek: 0,
     total: 0,
     pending: 0,
   });
-  const [loading, setLoading] = useState(true);
-
-  const fetchStats = async () => {
-    try {
-      const data = await getTaskStats();
-      setStats(data);
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    fetchStats();
-  }, []);
+    const today = new Date().toDateString();
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    
+    const completed = tasks.filter(t => t.status === 'completed');
+    const completedToday = completed.filter(t => t.completed_at && new Date(t.completed_at).toDateString() === today).length;
+    const completedThisWeek = completed.filter(t => t.completed_at && new Date(t.completed_at) >= weekAgo).length;
+    const pending = tasks.filter(t => t.status !== 'completed').length;
+    
+    setStats({
+      completedToday,
+      completedThisWeek,
+      total: completed.length,
+      pending,
+    });
+  }, [tasks]);
 
-  const statsItems = [
-    {
-      label: 'Completadas Hoy',
-      value: stats.completedToday,
-      icon: CheckCircle2,
-      color: 'text-accent-success',
-      bgColor: 'bg-accent-success/10',
-    },
-    {
-      label: 'Esta Semana',
-      value: stats.completedThisWeek,
-      icon: Calendar,
-      color: 'text-accent-primary',
-      bgColor: 'bg-accent-primary/10',
-    },
-    {
-      label: 'Total Tareas',
-      value: stats.total,
-      icon: ListTodo,
-      color: 'text-accent-secondary',
-      bgColor: 'bg-accent-secondary/10',
-    },
-    {
-      label: 'Pendientes',
-      value: stats.pending,
-      icon: Clock,
-      color: 'text-accent-warning',
-      bgColor: 'bg-accent-warning/10',
-    },
+  const statItems = [
+    { icon: CheckCircle2, label: 'Completadas Hoy', value: stats.completedToday, color: 'text-green-400' },
+    { icon: Calendar, label: 'Esta Semana', value: stats.completedThisWeek, color: 'text-blue-400' },
+    { icon: ListTodo, label: 'Total Completadas', value: stats.total, color: 'text-purple-400' },
+    { icon: Clock, label: 'Pendientes', value: stats.pending, color: 'text-yellow-400' },
   ];
 
-  if (loading) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="bg-card rounded-xl p-4 animate-pulse-soft">
-            <div className="h-10 bg-card-hover rounded-lg mb-2" />
-            <div className="h-4 bg-card-hover rounded w-2/3" />
-          </div>
-        ))}
-      </div>
-    );
-  }
-
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      {statsItems.map((item) => (
-        <div
-          key={item.label}
-          className="bg-card rounded-xl p-4 shadow-soft hover:shadow-glow transition-all duration-300"
-        >
-          <div className="flex items-center gap-3">
-            <div className={`p-2.5 rounded-lg ${item.bgColor}`}>
-              <item.icon className={`w-5 h-5 ${item.color}`} />
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {statItems.map((item, idx) => {
+        const Icon = item.icon;
+        return (
+          <div key={idx} className="bg-card rounded-xl p-4 flex items-center gap-3 shadow-lg border border-surface/50">
+            <div className={`w-11 h-11 rounded-xl bg-surface flex items-center justify-center ${item.color}`}>
+              <Icon size={20} />
             </div>
             <div>
-              <p className="text-2xl font-bold text-text-primary">{item.value}</p>
-              <p className="text-sm text-text-secondary">{item.label}</p>
+              <p className="text-[10px] text-gray-400 uppercase tracking-wider">{item.label}</p>
+              <p className="text-2xl font-bold text-white">{item.value}</p>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

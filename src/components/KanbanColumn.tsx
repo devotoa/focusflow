@@ -1,26 +1,25 @@
 'use client';
 
 import { Task, TaskStatus } from '@/types/task';
-import TaskCard from './TaskCard';
+import { TaskCard } from './TaskCard';
 import { Circle, Play, Ban, CheckCircle } from 'lucide-react';
 
 interface KanbanColumnProps {
-  title: string;
   status: TaskStatus;
   tasks: Task[];
-  onMove: (id: string, status: TaskStatus) => void;
+  onComplete: (id: string) => void;
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
 }
 
-const statusConfig = {
-  todo: { icon: Circle, color: 'text-gray-400', borderColor: 'border-gray-600' },
-  'in-progress': { icon: Play, color: 'text-blue-500', borderColor: 'border-blue-500' },
-  blocked: { icon: Ban, color: 'text-priority-high', borderColor: 'border-priority-high' },
-  completed: { icon: CheckCircle, color: 'text-priority-low', borderColor: 'border-priority-low' },
+const statusConfig: Record<TaskStatus, { icon: typeof Circle; color: string; borderColor: string; title: string }> = {
+  todo: { icon: Circle, color: 'text-gray-400', borderColor: 'border-gray-600', title: 'Pendiente' },
+  'in-progress': { icon: Play, color: 'text-blue-500', borderColor: 'border-blue-500', title: 'En Progreso' },
+  blocked: { icon: Ban, color: 'text-red-500', borderColor: 'border-red-500', title: 'Bloqueado' },
+  completed: { icon: CheckCircle, color: 'text-green-500', borderColor: 'border-green-500', title: 'Completado' },
 };
 
-export default function KanbanColumn({ title, status, tasks, onMove, onEdit, onDelete }: KanbanColumnProps) {
+export function KanbanColumn({ status, tasks, onComplete, onEdit, onDelete }: KanbanColumnProps) {
   const config = statusConfig[status];
   const Icon = config.icon;
 
@@ -29,7 +28,7 @@ export default function KanbanColumn({ title, status, tasks, onMove, onEdit, onD
       <div className={`flex justify-between items-center mb-4 pb-3 border-b-2 ${config.borderColor}`}>
         <div className={`flex items-center gap-2 font-semibold ${config.color}`}>
           <Icon size={16} />
-          <span>{title}</span>
+          <span>{config.title}</span>
         </div>
         <span className="bg-background px-3 py-1 rounded-full text-xs font-semibold text-gray-400">
           {tasks.length}
@@ -47,7 +46,7 @@ export default function KanbanColumn({ title, status, tasks, onMove, onEdit, onD
             <TaskCard 
               key={task.id} 
               task={task} 
-              onMove={onMove} 
+              onComplete={onComplete} 
               onEdit={onEdit} 
               onDelete={onDelete} 
             />
