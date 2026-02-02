@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { Task, TaskStatus } from '@/types/task';
+import { Task, TaskStatus, CreateTaskInput } from '@/types/task';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -15,7 +15,7 @@ export async function getTasks(): Promise<Task[]> {
   return data || [];
 }
 
-export async function createTask(task: Omit<Task, 'id' | 'created_at' | 'updated_at'>): Promise<Task> {
+export async function createTask(task: CreateTaskInput): Promise<Task> {
   const { data, error } = await supabase
     .from('tasks')
     .insert([task])
