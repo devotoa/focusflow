@@ -1,36 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const WEBHOOK_URL = 'https://discord.com/api/webhooks/1467992560097034252/Y4Ee_Y5HHld0tG-jDd8Y5mOcHVmTGQp_fJji7JtUD6MMmXvA2Bj_uetRiwBov_HUqEbH';
-const CLIPPY_ROLE_ID = '1467276913201381572';
+// URL de ngrok (la vas a obtener cuando corras: ngrok http 18789)
+const OPENCLAW_GATEWAY_URL = process.env.OPENCLAW_GATEWAY_URL || 'http://localhost:18789/v1/sessions/send';
+const GATEWAY_TOKEN = process.env.GATEWAY_TOKEN || 'f7a0e919f5098185130307ba888aadd525fa3a5657048850';
+const DISCORD_CHANNEL_ID = '1467992360599294033';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { task } = body;
 
-    const message = `🤖 **Nueva tarea para Clippy**\n\n**Título:** ${task.title}\n**Categoría:** ${task.category}\n**Prioridad:** ${task.priority}\n**Estado:** ${task.status}\n${task.description ? `**Descripción:** ${task.description}` : ''}\n\n<@&${CLIPPY_ROLE_ID}> por favor, hacé esta tarea.`;
+    const message = `🤖 **Nueva tarea desde FocusFlow**\n\n**Título:** ${task.title}\n**Categoría:** ${task.category}\n**Prioridad:** ${task.priority}\n**Estado:** ${task.status}\n${task.description ? `**Descripción:** ${task.description}` : ''}\n\nPor favor, ejecutá esta tarea y reportá el resultado.`;
 
-    const response = await fetch(WEBHOOK_URL, {
+    // Enviar directamente al Gateway de OpenClaw
+    const response = await fetch(OPENCLAW_GATEWAY_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        content: message,
-        allowed_mentions: { 
-          parse: ['everyone', 'users', 'roles']
-        }
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GATEWAY_TOKEN}`,
+      },
+      body: JSON.stringify({
+        sessionKey: `agent:main:discord:channel:${DISCORD_CHANNEL_ID}`,
+        message: message,
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Webhook error:', response.status, errorText);
+      console.error('Gateway error:', response.status, errorText);
       return NextResponse.json(
-        { error: 'Webhook error', status: response.status, details: errorText },
+        { error: 'Gateway error', status: response.status, details: errorText },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, message: 'Tarea enviada a Clippy' });
   } catch (error: any) {
     console.error('Exception:', error);
     return NextResponse.json(
