@@ -19,7 +19,7 @@ const STATUSES: TaskStatus[] = ['todo', 'in-progress', 'blocked', 'completed'];
 export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState<TaskCategory>('strategy');
+  const [category, setCategory] = useState<TaskCategory>('Estrategia');
   const [priority, setPriority] = useState<TaskPriority>('medium');
   const [status, setStatus] = useState<TaskStatus>('todo');
   const [errors, setErrors] = useState<Record<string, string>>({});
