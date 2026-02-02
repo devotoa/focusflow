@@ -96,6 +96,28 @@ export default function Home() {
     }
   };
 
+  const handleAskClippy = async (task: Task) => {
+    const message = `🤖 **Nueva tarea para Clippy**\n\n**Título:** ${task.title}\n**Categoría:** ${task.category}\n**Prioridad:** ${task.priority}\n**Estado:** ${task.status}\n${task.description ? `**Descripción:** ${task.description}` : ''}\n\n@clippy por favor, ¿podés hacer esta tarea?`;
+    
+    try {
+      // Enviar a Discord webhook (necesitás configurar DISCORD_WEBHOOK_URL en Vercel)
+      const response = await fetch('/api/ask-clippy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task, message }),
+      });
+      
+      if (response.ok) {
+        alert('✅ Le pediste a Clippy que haga esta tarea. Te va a responder por Discord.');
+      } else {
+        alert('❌ Error al enviar la solicitud. Intentá de nuevo.');
+      }
+    } catch (error) {
+      console.error('Error asking Clippy:', error);
+      alert('❌ Error al enviar la solicitud.');
+    }
+  };
+
   const openCreateModal = () => {
     setEditingTask(null);
     setIsModalOpen(true);
@@ -200,6 +222,7 @@ export default function Home() {
             onComplete={handleCompleteTask}
             onEdit={openEditModal}
             onDelete={handleDeleteTask}
+            onAskClippy={handleAskClippy}
           />
           <KanbanColumn
             status="in-progress"
@@ -207,6 +230,7 @@ export default function Home() {
             onComplete={handleCompleteTask}
             onEdit={openEditModal}
             onDelete={handleDeleteTask}
+            onAskClippy={handleAskClippy}
           />
           <KanbanColumn
             status="blocked"
@@ -214,6 +238,7 @@ export default function Home() {
             onComplete={handleCompleteTask}
             onEdit={openEditModal}
             onDelete={handleDeleteTask}
+            onAskClippy={handleAskClippy}
           />
           <KanbanColumn
             status="completed"
@@ -221,6 +246,7 @@ export default function Home() {
             onComplete={handleCompleteTask}
             onEdit={openEditModal}
             onDelete={handleDeleteTask}
+            onAskClippy={handleAskClippy}
           />
         </div>
       </div>

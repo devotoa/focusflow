@@ -10,6 +10,7 @@ interface KanbanColumnProps {
   onComplete: (id: string) => void;
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
+  onAskClippy?: (task: Task) => void;
 }
 
 const statusConfig: Record<TaskStatus, { icon: typeof Circle; color: string; borderColor: string; title: string }> = {
@@ -19,7 +20,7 @@ const statusConfig: Record<TaskStatus, { icon: typeof Circle; color: string; bor
   completed: { icon: CheckCircle, color: 'text-green-500', borderColor: 'border-green-500', title: 'Completado' },
 };
 
-export function KanbanColumn({ status, tasks, onComplete, onEdit, onDelete }: KanbanColumnProps) {
+export function KanbanColumn({ status, tasks, onComplete, onEdit, onDelete, onAskClippy }: KanbanColumnProps) {
   const config = statusConfig[status];
   const Icon = config.icon;
 
@@ -48,7 +49,8 @@ export function KanbanColumn({ status, tasks, onComplete, onEdit, onDelete }: Ka
               task={task} 
               onComplete={onComplete} 
               onEdit={onEdit} 
-              onDelete={onDelete} 
+              onDelete={onDelete}
+              onAskClippy={onAskClippy}
             />
           ))
         )}

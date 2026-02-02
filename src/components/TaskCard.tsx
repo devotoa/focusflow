@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Edit2, Trash2, MessageCircle } from 'lucide-react';
+import { Check, Edit2, Trash2, MessageCircle, Bot } from 'lucide-react';
 import type { Task } from '@/types/task';
 import { CATEGORY_COLORS, CATEGORY_LABELS, PRIORITY_COLORS, PRIORITY_LABELS } from '@/types/task';
 
@@ -10,9 +10,10 @@ interface TaskCardProps {
   onComplete: (id: string) => void;
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
+  onAskClippy?: (task: Task) => void;
 }
 
-export function TaskCard({ task, onComplete, onEdit, onDelete }: TaskCardProps) {
+export function TaskCard({ task, onComplete, onEdit, onDelete, onAskClippy }: TaskCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   const formatDate = (dateString: string) => {
@@ -76,10 +77,19 @@ export function TaskCard({ task, onComplete, onEdit, onDelete }: TaskCardProps) 
 
         {/* Action Buttons */}
         <div className={`flex items-center gap-1 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+          {onAskClippy && task.status !== 'completed' && (
+            <button
+              onClick={() => onAskClippy(task)}
+              className="p-1.5 rounded-lg bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-colors"
+              title="🤖 Pedirle a Clippy"
+            >
+              <Bot className="w-4 h-4" />
+            </button>
+          )}
           {task.status !== 'completed' && (
             <button
               onClick={() => onComplete(task.id)}
-              className="p-1.5 rounded-lg bg-accent-success/20 text-accent-success hover:bg-accent-success/30 transition-colors"
+              className="p-1.5 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors"
               title="Completar"
             >
               <Check className="w-4 h-4" />
@@ -87,14 +97,14 @@ export function TaskCard({ task, onComplete, onEdit, onDelete }: TaskCardProps) 
           )}
           <button
             onClick={() => onEdit(task)}
-            className="p-1.5 rounded-lg bg-accent-primary/20 text-accent-primary hover:bg-accent-primary/30 transition-colors"
+            className="p-1.5 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
             title="Editar"
           >
             <Edit2 className="w-4 h-4" />
           </button>
           <button
             onClick={() => onDelete(task.id)}
-            className="p-1.5 rounded-lg bg-accent-danger/20 text-accent-danger hover:bg-accent-danger/30 transition-colors"
+            className="p-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
             title="Eliminar"
           >
             <Trash2 className="w-4 h-4" />
