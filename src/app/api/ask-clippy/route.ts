@@ -9,10 +9,13 @@ export async function POST(request: NextRequest) {
 
     const webhookUrl = 'https://discord.com/api/webhooks/1467992560097034252/Y4Ee_Y5HHld0tG-jDd8Y5mOcHVmTGQp_fJji7JtUD6MMmXvA2Bj_uetRiwBov_HUqEbH';
 
+    // Mensaje para Discord con instrucción clara
+    const discordMessage = `${message}\n\n👆 **Para activar a Clippy, respondé:** \`clippy hacelo\``;
+
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: message }),
+      body: JSON.stringify({ content: discordMessage }),
     });
 
     if (!response.ok) {
