@@ -36,7 +36,7 @@ export function TaskModal({ isOpen, onClose, onSave, task }: TaskModalProps) {
     } else {
       setTitle('');
       setDescription('');
-      setCategory('strategy');
+      setCategory('Estrategia');
       setPriority('medium');
       setStatus('todo');
     }
