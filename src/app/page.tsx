@@ -103,22 +103,25 @@ export default function Home() {
     const webhookUrl = 'https://discord.com/api/webhooks/1467992560097034252/Y4Ee_Y5HHld0tG-jDd8Y5mOcHVmTGQp_fJji7JtUD6MMmXvA2Bj_uetRiwBov_HUqEbH';
     
     try {
+      console.log('Enviando a Discord:', webhookUrl);
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: message }),
       });
       
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
         alert('✅ Le pediste a Clippy que haga esta tarea. Te va a responder por Discord.');
       } else {
         const errorText = await response.text();
         console.error('Discord error:', response.status, errorText);
-        alert('❌ Error al enviar la solicitud: ' + response.status);
+        alert('❌ Error ' + response.status + ': ' + errorText.substring(0, 200));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error asking Clippy:', error);
-      alert('❌ Error al enviar la solicitud: ' + String(error));
+      alert('❌ Error: ' + (error.message || String(error)));
     }
   };
 
