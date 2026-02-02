@@ -1,0 +1,38 @@
+export type TaskCategory = 'Meta Ads' | 'Contenido IG' | 'Scripts/Código' | 'Estrategia' | 'Contabilidad' | 'Investigación';
+export type TaskPriority = 'high' | 'medium' | 'low';
+export type TaskStatus = 'todo' | 'in-progress' | 'blocked' | 'completed';
+
+export interface Task {
+  id: string;
+  title: string;
+  description: string | null;
+  category: TaskCategory;
+  priority: TaskPriority;
+  status: TaskStatus;
+  created_at: string;
+  updated_at: string;
+  completed_at: string | null;
+  discord_message_id: string | null;
+}
+
+export const CATEGORIES: TaskCategory[] = ['Meta Ads', 'Contenido IG', 'Scripts/Código', 'Estrategia', 'Contabilidad', 'Investigación'];
+export const PRIORITIES: { value: TaskPriority; label: string; color: string }[] = [
+  { value: 'high', label: 'Urgente', color: '#ef4444' },
+  { value: 'medium', label: 'Importante', color: '#eab308' },
+  { value: 'low', label: 'Puede esperar', color: '#22c55e' },
+];
+export const STATUSES: { value: TaskStatus; label: string }[] = [
+  { value: 'todo', label: 'Pendiente' },
+  { value: 'in-progress', label: 'En Progreso' },
+  { value: 'blocked', label: 'Bloqueado' },
+  { value: 'completed', label: 'Completado' },
+];
+
+export const CATEGORY_COLORS: Record<TaskCategory, string> = {
+  'Meta Ads': '#3b82f6',
+  'Contenido IG': '#ec4899',
+  'Scripts/Código': '#22c55e',
+  'Estrategia': '#a855f7',
+  'Contabilidad': '#eab308',
+  'Investigación': '#6366f1',
+};
