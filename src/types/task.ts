@@ -21,6 +21,8 @@ export interface CreateTaskInput {
   category: TaskCategory;
   priority: TaskPriority;
   status: TaskStatus;
+  completed_at?: string | null;
+  discord_message_id?: string | null;
 }
 
 export interface UpdateTaskInput {
