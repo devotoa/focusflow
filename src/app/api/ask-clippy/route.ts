@@ -7,15 +7,18 @@ export async function POST(request: NextRequest) {
 
     console.log('Recibido:', { task, message });
 
+    // Webhook de Discord
     const webhookUrl = 'https://discord.com/api/webhooks/1467992560097034252/Y4Ee_Y5HHld0tG-jDd8Y5mOcHVmTGQp_fJji7JtUD6MMmXvA2Bj_uetRiwBov_HUqEbH';
 
-    // Mensaje para Discord con instrucción clara
-    const discordMessage = `${message}\n\n👆 **Para activar a Clippy, respondé:** \`clippy hacelo\``;
-
+    // Mensaje que simula ser del usuario y menciona a Clippy
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: discordMessage }),
+      body: JSON.stringify({ 
+        content: message,
+        username: 'FocusFlow',
+        avatar_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
+      }),
     });
 
     if (!response.ok) {
