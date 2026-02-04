@@ -50,10 +50,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await response.json();
-    console.log('Tarea enviada a Discord:', result);
+    // Discord webhook responde 204 No Content (sin body)
+    // o a veces JSON con info del mensaje
+    let result = null;
+    const responseText = await response.text();
+    if (responseText) {
+      try {
+        result = JSON.parse(responseText);
+      } catch {
+        result = { raw: responseText };
+      }
+    }
+    
+    console.log('Tarea enviada a Discord:', response.status, result);
 
-    return NextResponse.json({ success: true, result });
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Tarea enviada a Clippy',
+      result 
+    });
   } catch (error: any) {
     console.error('Exception al enviar a Discord:', error);
     return NextResponse.json(
