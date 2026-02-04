@@ -76,38 +76,38 @@ export function TaskCard({ task, onComplete, onEdit, onDelete, onAskClippy }: Ta
         </span>
 
         {/* Action Buttons */}
-        <div className={`flex items-center gap-1 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`flex items-center gap-2 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
           {onAskClippy && task.status !== 'completed' && (
             <button
               onClick={() => onAskClippy(task)}
-              className="p-1.5 rounded-lg bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-colors"
+              className="p-2.5 rounded-xl bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               title="🤖 Pedirle a Clippy"
             >
-              <Bot className="w-4 h-4" />
+              <Bot className="w-6 h-6" />
             </button>
           )}
           {task.status !== 'completed' && (
             <button
               onClick={() => onComplete(task.id)}
-              className="p-1.5 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors"
+              className="p-2.5 rounded-xl bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               title="Completar"
             >
-              <Check className="w-4 h-4" />
+              <Check className="w-6 h-6" />
             </button>
           )}
           <button
             onClick={() => onEdit(task)}
-            className="p-1.5 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
+            className="p-2.5 rounded-xl bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
             title="Editar"
           >
-            <Edit2 className="w-4 h-4" />
+            <Edit2 className="w-6 h-6" />
           </button>
           <button
             onClick={() => onDelete(task.id)}
-            className="p-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
+            className="p-2.5 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
             title="Eliminar"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-6 h-6" />
           </button>
         </div>
       </div>

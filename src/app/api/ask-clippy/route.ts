@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+const execFileAsync = promisify(execFile);
 
-// URL de ngrok (la vas a obtener cuando corras: ngrok http 18789)
-const OPENCLAW_GATEWAY_URL = process.env.OPENCLAW_GATEWAY_URL || 'http://localhost:18789/v1/sessions/send';
-const GATEWAY_TOKEN = process.env.GATEWAY_TOKEN || 'f7a0e919f5098185130307ba888aadd525fa3a5657048850';
+
 const DISCORD_CHANNEL_ID = '1467992360599294033';
 
 export async function POST(request: NextRequest) {
@@ -10,33 +11,33 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { task } = body;
 
-    const message = `🤖 **Nueva tarea desde FocusFlow**\n\n**Título:** ${task.title}\n**Categoría:** ${task.category}\n**Prioridad:** ${task.priority}\n**Estado:** ${task.status}\n${task.description ? `**Descripción:** ${task.description}` : ''}\n\nPor favor, ejecutá esta tarea y reportá el resultado.`;
+    // Construir el mensaje para Clippy
+    const message = `🤖 **Nueva tarea desde FocusFlow**
 
-    // Enviar directamente al Gateway de OpenClaw
-    const response = await fetch(OPENCLAW_GATEWAY_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GATEWAY_TOKEN}`,
-      },
-      body: JSON.stringify({
-        sessionKey: `agent:main:discord:channel:${DISCORD_CHANNEL_ID}`,
-        message: message,
-      }),
-    });
+📋 **[TASK]**
+├─ 🆔 ID: \`${task.id ?? 'auto'}\`
+├─ 📝 Título: **${task.title}**
+├─ 📂 Categoría: ${task.category}
+├─ 🔥 Prioridad: ${task.priority}
+├─ 📊 Estado: ${task.status}
+└─ 📝 Descripción: ${task.description ?? 'Sin descripción'}
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Gateway error:', response.status, errorText);
-      return NextResponse.json(
-        { error: 'Gateway error', status: response.status, details: errorText },
-        { status: 500 }
-      );
-    }
+➡️ Por favor, ejecutá esta tarea y reportá el resultado en Discord.`;
 
-    return NextResponse.json({ success: true, message: 'Tarea enviada a Clippy' });
+    // Enviar a Discord via CLI local (sin HTTP)
+    const { stdout } = await execFileAsync('openclaw', [
+      'message','send',
+      '--channel','discord',
+      '--target', DISCORD_CHANNEL_ID,
+      '--message', message,
+      '--json'
+    ]);
+    const result = JSON.parse(stdout);
+    console.log('Tarea enviada a Discord:', result);
+
+    return NextResponse.json({ success: true, result });
   } catch (error: any) {
-    console.error('Exception:', error);
+    console.error('Exception al enviar a Clippy:', error);
     return NextResponse.json(
       { error: 'Exception', message: error.message },
       { status: 500 }
